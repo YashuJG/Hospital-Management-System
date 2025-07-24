@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>About Us - Project Team</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f6f9fc, #e0f7fa);
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .team-section {
+            padding: 60px 0;
+            text-align: center;
+        }
+        .team-section h2 {
+            font-size: 36px;
+            margin-bottom: 40px;
+            font-weight: bold;
+            color: #333;
+        }
+        .team-member {
+            background-color: #fff;
+            border-radius: 20px;
+            padding: 30px 20px;
+            transition: transform 0.4s, box-shadow 0.4s;
+        }
+        .team-member:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+        .team-member img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid #5fd0b5;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        .team-member:hover img {
+            transform: rotate(5deg) scale(1.05);
+        }
+        .team-member h5 {
+            margin-top: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+        .team-member p {
+            font-size: 14px;
+            color: #777;
+        }
+        .btn-home {
+            display: inline-block;
+            margin-top: 40px;
+            background-color: #5fd0b5;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 30px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        .btn-home:hover {
+            background-color: #48bca0;
+        }
+    </style>
+</head>
+<body>
+
+<section class="team-section">
+    <div class="container">
+        <h2>Meet Our Project Team</h2>
+        <div class="row justify-content-center">
+
+            <!-- Yasaswini -->
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="team-member shadow">
+                    <img src="/images/teamlead4.jpg" alt="Yasaswini">
+                    <h5>T. Yasaswini Sri</h5>
+                    <p>Team Lead & Full Stack Developer</p>
+                </div>
+            </div>
+
+            <!-- Tulasi -->
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="team-member shadow">
+                    <img src="/images/teem2.jpg" alt="Tulasi">
+                    <h5>N. Tulasi Swetha</h5>
+                    <p>Full Stack Developer</p>
+                </div>
+            </div>
+
+            <!-- Sri Harshita -->
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="team-member shadow">
+                    <img src="/images/teamm3.jpg" alt="Sri Harshita">
+                    <h5>Nch. Sri Harshita</h5>
+                    <p>Backend Developer</p>
+                </div>
+            </div>
+
+            <!-- Bhavya Dharani -->
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="team-member shadow">
+                    <img src="/images/teem4.jpg" alt="Bhavya Dharani">
+                    <h5>A. Bhavya Dharani</h5>
+                    <p>Frontend Developer</p>
+                </div>
+            </div>
+
+        </div>
+
+        <a href="/" class="btn-home"><i class="fas fa-arrow-left"></i> Back to Home</a>
+    </div>
+</section>
+
+</body>
+</html>

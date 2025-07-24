@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Patient Details</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <style>
+        .navbar-gradient {
+            background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%) !important;
+        }
+        .text-white {
+            color: #fff !important;
+        }
+        .navbar-nav .nav-link {
+            color: #fff !important;
+            font-weight: 600;
+            margin-left: 1rem;
+            text-decoration: none !important;
+        }
+        .navbar-nav .nav-link:hover {
+            color: #e0ffe0 !important;
+        }
+        .btn-rounded {
+            border-radius: 20px;
+            padding: 0.5em 1.5em;
+            font-weight: 500;
+        }
+        .card {
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            border-radius: 18px;
+        }
+        .table th, .table td {
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-gradient">
+    <div class="container-fluid">
+        <a class="navbar-brand text-white" href="/receptionist/dashboard">Receptionist Dashboard</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link text-white" href="/receptionist/patients">Patients</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="/logout">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container mt-4">
+    <h2>Patient Details</h2>
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-bordered">
+                <tr><th>ID</th><td th:text="${patient.id}"></td></tr>
+                <tr><th>Name</th><td th:text="${patient.name}"></td></tr>
+                <tr><th>Email</th><td th:text="${patient.email}"></td></tr>
+                <tr><th>Phone</th><td th:text="${patient.phone}"></td></tr>
+                <tr><th>Address</th><td th:text="${patient.address}"></td></tr>
+                <tr><th>Date of Birth</th><td th:text="${patient.dateOfBirth}"></td></tr>
+                <tr><th>Gender</th><td th:text="${patient.gender}"></td></tr>
+                <tr><th>Emergency Contact</th><td th:text="${patient.emergencyContact}"></td></tr>
+                <tr><th>Medical History</th><td th:text="${patient.medicalHistory}"></td></tr>
+            </table>
+            <a th:href="@{'/receptionist/patients/' + ${patient.id} + '/edit'}" class="btn btn-primary btn-rounded">Edit</a>
+            <a th:href="@{'/receptionist/patients'}" class="btn btn-secondary btn-rounded">Back to List</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

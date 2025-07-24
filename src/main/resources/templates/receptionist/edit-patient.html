@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Patient</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <style>
+        .navbar-gradient {
+            background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%) !important;
+        }
+        .text-white {
+            color: #fff !important;
+        }
+        .navbar-nav .nav-link {
+            color: #fff !important;
+            font-weight: 600;
+            margin-left: 1rem;
+            text-decoration: none !important;
+        }
+        .navbar-nav .nav-link:hover {
+            color: #e0ffe0 !important;
+        }
+        .btn-rounded {
+            border-radius: 20px;
+            padding: 0.5em 1.5em;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-gradient">
+    <div class="container-fluid">
+        <a class="navbar-brand text-white" href="/receptionist/dashboard">Receptionist Dashboard</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link text-white" href="/receptionist/patients">Patients</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="/logout">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container mt-4">
+    <h2>Edit Patient</h2>
+    <form th:action="@{'/receptionist/patients/' + ${patient.id} + '/edit'}" th:object="${patient}" method="post">
+        <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="name" th:field="*{name}" required>
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" th:field="*{email}" required>
+        </div>
+        <div class="mb-3">
+            <label for="phone" class="form-label">Phone</label>
+            <input type="text" class="form-control" id="phone" th:field="*{phone}" required>
+        </div>
+        <div class="mb-3">
+            <label for="address" class="form-label">Address</label>
+            <input type="text" class="form-control" id="address" th:field="*{address}">
+        </div>
+        <div class="mb-3">
+            <label for="dateOfBirth" class="form-label">Date of Birth</label>
+            <input type="date" class="form-control" id="dateOfBirth" th:field="*{dateOfBirth}" required>
+        </div>
+        <div class="mb-3">
+            <label for="gender" class="form-label">Gender</label>
+            <select class="form-select" id="gender" th:field="*{gender}">
+                <option value="MALE">Male</option>
+                <option value="FEMALE">Female</option>
+                <option value="OTHER">Other</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="emergencyContact" class="form-label">Emergency Contact</label>
+            <input type="text" class="form-control" id="emergencyContact" th:field="*{emergencyContact}">
+        </div>
+        <div class="mb-3">
+            <label for="medicalHistory" class="form-label">Medical History</label>
+            <textarea class="form-control" id="medicalHistory" th:field="*{medicalHistory}"></textarea>
+        </div>
+        <button type="submit" class="btn btn-success btn-rounded">Save</button>
+        <a th:href="@{'/receptionist/patients'}" class="btn btn-secondary btn-rounded">Cancel</a>
+    </form>
+</div>
+</body>
+</html>

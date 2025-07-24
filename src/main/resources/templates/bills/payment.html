@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Bill Payment</title>
+    <link rel="stylesheet" th:href="@{/static/css/bootstrap.css}" />
+    <link rel="stylesheet" th:href="@{/static/css/font-awesome.min.css}" />
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            background-color: #f4f6f8;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .wrapper {
+            min-height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 10px;
+        }
+
+        .payment-container {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .card-header {
+            background-color: #0d6efd;
+            color: white;
+            border-radius: 12px 12px 0 0;
+            padding: 16px 24px;
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #212529;
+        }
+
+        h2 {
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-label {
+            font-weight: 500;
+        }
+
+        .btn-success {
+            background-color: #198754;
+            border: none;
+        }
+
+        .btn-success:hover {
+            background-color: #157347;
+        }
+
+        .alert {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <div class="payment-container">
+        <h2><i class="fa fa-credit-card"></i> Bill Payment</h2>
+
+        <div th:if="${error}" class="alert alert-danger mx-3" th:text="${error}"></div>
+        <div th:if="${success}" class="alert alert-success mx-3" th:text="${success}"></div>
+
+        <div th:if="${bill}">
+            <div class="card mb-4 mx-3">
+                <div class="card-header">
+                    Bill Summary
+                </div>
+                <div class="card-body">
+                    <p><span class="info-label">Bill #:</span> <span class="info-value" th:text="${bill.billNumber}"></span></p>
+                    <p><span class="info-label">Patient:</span> <span class="info-value" th:text="${bill.patient.name}"></span></p>
+                    <p><span class="info-label">Doctor:</span> <span class="info-value" th:text="${bill.doctor != null ? bill.doctor.name : 'N/A'}"></span></p>
+                    <p><span class="info-label">Total Amount:</span> ₹<span class="info-value" th:text="${bill.totalAmount}"></span></p>
+                    <p><span class="info-label">Paid Amount:</span> ₹<span class="info-value" th:text="${bill.paidAmount}"></span></p>
+                    <p><span class="info-label">Balance:</span> ₹<span class="info-value" th:text="${bill.balanceAmount}"></span></p>
+                </div>
+            </div>
+
+            <div class="card mx-3 mb-4">
+                <div class="card-header">
+                    Make Payment
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/bills/{id}/payment(id=${bill.id})}" method="post">
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Payment Amount</label>
+                            <input type="number" step="0.01" min="0" max="999999" class="form-control" id="amount" name="amount" placeholder="Enter amount to pay" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="paymentMethod" class="form-label">Payment Method</label>
+                            <select class="form-select" id="paymentMethod" name="paymentMethod" required>
+                                <option disabled selected value="">Choose a method</option>
+                                <option th:each="method : ${paymentMethods}" th:value="${method}" th:text="${method}"></option>
+                            </select>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-success px-4"><i class="fa fa-credit-card"></i> Pay</button>
+                            <a href="/bills" class="btn btn-secondary"><i class="fa fa-arrow-left"></i> Back</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

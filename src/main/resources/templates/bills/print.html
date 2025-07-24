@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Print Bill</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @media print {
+            .no-print { display: none; }
+        }
+        body { background: #fff; }
+        .bill-container { max-width: 800px; margin: 30px auto; border: 1px solid #ccc; padding: 30px; border-radius: 10px; }
+        h2 { text-align: center; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+<div class="bill-container">
+    <h2>Bill Details</h2>
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h5>Patient Information</h5>
+            <table class="table table-borderless">
+                <tr><td><strong>Name:</strong></td><td th:text="${bill.patient.name}"></td></tr>
+                <tr><td><strong>Email:</strong></td><td th:text="${bill.patient.email}"></td></tr>
+                <tr><td><strong>Phone:</strong></td><td th:text="${bill.patient.phone}"></td></tr>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <h5>Bill Information</h5>
+            <table class="table table-borderless">
+                <tr><td><strong>Bill Number:</strong></td><td th:text="${bill.billNumber}"></td></tr>
+                <tr><td><strong>Bill Date:</strong></td><td th:text="${#temporals.format(bill.billDate, 'dd/MM/yyyy HH:mm')}"></td></tr>
+                <tr><td><strong>Due Date:</strong></td><td th:text="${bill.dueDate != null ? #temporals.format(bill.dueDate, 'dd/MM/yyyy') : 'Not set'}"></td></tr>
+            </table>
+        </div>
+    </div>
+    <h5>Charges Breakdown</h5>
+    <table class="table table-bordered mb-4">
+        <tbody>
+            <tr><td><strong>Consultation Fee:</strong></td><td class="text-end" th:text="${'₹' + bill.consultationFee}"></td></tr>
+            <tr><td><strong>Medication Cost:</strong></td><td class="text-end" th:text="${'₹' + bill.medicationCost}"></td></tr>
+            <tr><td><strong>Lab Test Cost:</strong></td><td class="text-end" th:text="${'₹' + bill.labTestCost}"></td></tr>
+            <tr><td><strong>Room Charges:</strong></td><td class="text-end" th:text="${'₹' + bill.roomCharges}"></td></tr>
+            <tr><td><strong>Procedure Cost:</strong></td><td class="text-end" th:text="${'₹' + bill.procedureCost}"></td></tr>
+            <tr><td><strong>Other Charges:</strong></td><td class="text-end" th:text="${'₹' + bill.otherCharges}"></td></tr>
+            <tr class="table-light"><td><strong>Subtotal:</strong></td><td class="text-end" th:text="${'₹' + (bill.consultationFee.add(bill.medicationCost).add(bill.labTestCost).add(bill.roomCharges).add(bill.procedureCost).add(bill.otherCharges))}"></td></tr>
+            <tr><td><strong>Discount:</strong></td><td class="text-end text-danger" th:text="${'-₹' + bill.discountAmount}"></td></tr>
+            <tr><td><strong>Tax:</strong></td><td class="text-end" th:text="${'₹' + bill.taxAmount}"></td></tr>
+            <tr class="table-primary"><td><strong>Total Amount:</strong></td><td class="text-end"><strong th:text="${'₹' + bill.totalAmount}"></strong></td></tr>
+            <tr><td><strong>Paid Amount:</strong></td><td class="text-end text-success" th:text="${'₹' + bill.paidAmount}"></td></tr>
+            <tr class="table-warning"><td><strong>Balance Amount:</strong></td><td class="text-end"><strong th:text="${'₹' + bill.balanceAmount}"></strong></td></tr>
+        </tbody>
+    </table>
+    <h5>Payment Status</h5>
+    <table class="table table-borderless mb-4">
+        <tr><td><strong>Status:</strong></td><td th:text="${bill.paymentStatus}"></td></tr>
+        <tr th:if="${bill.paymentMethod != null}"><td><strong>Payment Method:</strong></td><td th:text="${bill.paymentMethod}"></td></tr>
+        <tr th:if="${bill.paymentDate != null}"><td><strong>Payment Date:</strong></td><td th:text="${#temporals.format(bill.paymentDate, 'dd/MM/yyyy HH:mm')}"></td></tr>
+        <tr th:if="${bill.transactionId != null}"><td><strong>Transaction ID:</strong></td><td th:text="${bill.transactionId}"></td></tr>
+    </table>
+    <div class="mb-3">
+        <strong>Notes:</strong>
+        <p th:text="${bill.notes != null ? bill.notes : 'No notes available'}"></p>
+    </div>
+    <div class="text-center no-print">
+        <button onclick="window.print()" class="btn btn-primary"><i class="fas fa-print"></i> Print</button>
+    </div>
+</div>
+</body>
+</html> 

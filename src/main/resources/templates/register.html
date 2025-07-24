@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <title>Patient Registration - HMS</title>
+  <link rel="shortcut icon" th:href="@{/images/s4.png}" type="image/x-icon" />
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.css}" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Poppins:400,600,700&display=swap" rel="stylesheet" />
+
+  <!-- Custom CSS -->
+  <link th:href="@{/css/style.css}" rel="stylesheet" />
+  <link th:href="@{/css/responsive.css}" rel="stylesheet" />
+
+  <style>
+    .registration-section {
+      background: #f8f9fa;
+      padding: 60px 0;
+      min-height: calc(100vh - 200px);
+    }
+    .registration-card {
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .registration-header {
+      background: #5fd0b5;
+      color: white;
+      padding: 28px 20px 22px 20px;
+      text-align: center;
+      border-top-left-radius: 18px;
+      border-top-right-radius: 18px;
+    }
+    .registration-header h2 {
+      margin: 0;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .registration-header p {
+      margin: 10px 0 0 0;
+      opacity: 0.95;
+      font-size: 15px;
+    }
+    .form-control, .form-select {
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      padding: 12px 15px;
+      transition: all 0.3s;
+      font-size: 14px;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: #5fd0b5;
+      box-shadow: 0 0 0 0.2rem rgba(95, 208, 181, 0.15);
+    }
+    .form-control.is-invalid, .form-select.is-invalid {
+      border-color: #dc3545;
+    }
+    .btn-register {
+      background: #5fd0b5;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 30px;
+      font-weight: 600;
+      font-size: 16px;
+      transition: all 0.3s;
+      color: white;
+    }
+    .btn-register:hover {
+      background: #44bfa3;
+      transform: translateY(-1px);
+      box-shadow: 0 5px 15px rgba(95, 208, 181, 0.18);
+    }
+    .alert {
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+    }
+    .form-label {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+    .invalid-feedback {
+      font-size: 12px;
+    }
+    .form-check-label {
+      font-size: 14px;
+    }
+    .form-check-label a {
+      color: #5fd0b5;
+      text-decoration: none;
+    }
+    .form-check-label a:hover {
+      text-decoration: underline;
+    }
+    .registration-content {
+      padding: 32px 24px 28px 24px;
+    }
+    @media (max-width: 768px) {
+      .registration-content {
+        padding: 16px 8px 16px 8px;
+      }
+      .registration-header {
+        padding: 16px 8px 12px 8px;
+      }
+      .registration-header h2 {
+        font-size: 20px;
+      }
+      .registration-card {
+        max-width: 98vw;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="header_section">
+    <div class="container-fluid">
+      <nav class="navbar navbar-expand-lg custom_nav-container">
+        <a class="navbar-brand" href="/"><h3>HMS</h3></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse ml-auto" id="navbarSupportedContent">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+            <li class="nav-item active"><a class="nav-link" href="/register">Register</a></li>
+            <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+            <li class="nav-item"><a class="nav-link" href="/appointments/book">Book Appointment</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Registration Section -->
+  <section class="registration-section">
+    <div class="container">
+      <div class="registration-card">
+        <div class="registration-header">
+          <i class="fas fa-user-plus fa-2x mb-2"></i>
+          <h2>Patient Registration</h2>
+          <p>Join our healthcare system and get the best medical care</p>
+        </div>
+        
+        <div class="registration-content">
+          <!-- Error Messages -->
+          <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+          
+          <!-- Success Messages -->
+          <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+          
+          <form th:action="@{/register}" method="post" th:object="${registrationRequest}" id="registrationForm">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">First Name *</label>
+                  <input type="text" class="form-control" th:field="*{firstName}" 
+                         th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid'" required>
+                  <div th:if="${#fields.hasErrors('firstName')}" class="invalid-feedback">
+                    <span th:errors="*{firstName}"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Last Name *</label>
+                  <input type="text" class="form-control" th:field="*{lastName}" 
+                         th:classappend="${#fields.hasErrors('lastName')} ? 'is-invalid'" required>
+                  <div th:if="${#fields.hasErrors('lastName')}" class="invalid-feedback">
+                    <span th:errors="*{lastName}"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Email Address *</label>
+              <input type="email" class="form-control" th:field="*{email}" 
+                     th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'" required>
+              <div th:if="${#fields.hasErrors('email')}" class="invalid-feedback">
+                <span th:errors="*{email}"></span>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Phone Number *</label>
+              <input type="tel" class="form-control" th:field="*{phone}" 
+                     th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid'" required>
+              <div th:if="${#fields.hasErrors('phone')}" class="invalid-feedback">
+                <span th:errors="*{phone}"></span>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Date of Birth *</label>
+                  <input type="date" class="form-control" th:field="*{dateOfBirth}" 
+                         th:classappend="${#fields.hasErrors('dateOfBirth')} ? 'is-invalid'" required>
+                  <div th:if="${#fields.hasErrors('dateOfBirth')}" class="invalid-feedback">
+                    <span th:errors="*{dateOfBirth}"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Gender *</label>
+                  <select class="form-select" th:field="*{gender}" 
+                          th:classappend="${#fields.hasErrors('gender')} ? 'is-invalid'" required>
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  <div th:if="${#fields.hasErrors('gender')}" class="invalid-feedback">
+                    <span th:errors="*{gender}"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Address</label>
+              <textarea class="form-control" th:field="*{address}" rows="3" 
+                        placeholder="Enter your complete address"></textarea>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Emergency Contact</label>
+              <input type="tel" class="form-control" th:field="*{emergencyContact}" 
+                     placeholder="Emergency contact number">
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Medical History</label>
+              <textarea class="form-control" th:field="*{medicalHistory}" rows="3" 
+                        placeholder="Any existing medical conditions, allergies, medications, etc."></textarea>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Password *</label>
+                  <input type="password" class="form-control" th:field="*{password}" 
+                         th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'" required>
+                  <div th:if="${#fields.hasErrors('password')}" class="invalid-feedback">
+                    <span th:errors="*{password}"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Confirm Password *</label>
+                  <input type="password" class="form-control" name="confirmPassword" id="confirmPassword" required>
+                  <div class="invalid-feedback" id="passwordMismatch">
+                    Passwords do not match
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="termsCheck" required>
+                <label class="form-check-label" for="termsCheck">
+                  I agree to the <a href="#" class="text-decoration-none">Terms & Conditions</a> and 
+                  <a href="#" class="text-decoration-none">Privacy Policy</a>
+                </label>
+              </div>
+            </div>
+            
+            <div class="d-grid">
+              <button type="submit" class="btn btn-register" id="submitBtn">
+                <i class="fas fa-user-plus me-2"></i>Register as Patient
+              </button>
+            </div>
+          </form>
+          
+          <hr class="my-4">
+          
+          <div class="text-center">
+            <p class="mb-0">Already have an account? 
+              <a href="/login" class="text-decoration-none fw-bold">Login here</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="container-fluid footer_section">
+    <div class="container">
+      <p>
+        &copy; <span id="displayYear"></span> All Rights Reserved by Hospital Management System
+      </p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script th:src="@{/js/jquery-3.4.1.min.js}"></script>
+  <script th:src="@{/js/bootstrap.js}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+  <script>
+    // Display year
+    document.getElementById("displayYear").innerText = new Date().getFullYear();
+    
+    // Password confirmation validation
+    document.getElementById('registrationForm').addEventListener('submit', function(e) {
+      const password = document.querySelector('input[th\\:field="*{password}"]').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const passwordMismatch = document.getElementById('passwordMismatch');
+      const confirmPasswordInput = document.getElementById('confirmPassword');
+      
+      if (password !== confirmPassword) {
+        e.preventDefault();
+        confirmPasswordInput.classList.add('is-invalid');
+        passwordMismatch.style.display = 'block';
+        return false;
+      } else {
+        confirmPasswordInput.classList.remove('is-invalid');
+        passwordMismatch.style.display = 'none';
+      }
+    });
+    
+    // Real-time password validation
+    document.getElementById('confirmPassword').addEventListener('input', function() {
+      const password = document.querySelector('input[th\\:field="*{password}"]').value;
+      const confirmPassword = this.value;
+      const passwordMismatch = document.getElementById('passwordMismatch');
+      
+      if (confirmPassword && password !== confirmPassword) {
+        this.classList.add('is-invalid');
+        passwordMismatch.style.display = 'block';
+      } else {
+        this.classList.remove('is-invalid');
+        passwordMismatch.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>

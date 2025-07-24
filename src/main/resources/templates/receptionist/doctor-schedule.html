@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Doctor Schedule</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <style>
+        .navbar-gradient {
+            background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%) !important;
+        }
+        .text-white {
+            color: #fff !important;
+        }
+        .navbar-nav .nav-link {
+            color: #fff !important;
+            font-weight: 600;
+            margin-left: 1rem;
+            text-decoration: none !important;
+        }
+        .navbar-nav .nav-link:hover {
+            color: #e0ffe0 !important;
+        }
+        .btn-rounded {
+            border-radius: 20px;
+            padding: 0.5em 1.5em;
+            font-weight: 500;
+        }
+        .card {
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            border-radius: 18px;
+        }
+        .table th, .table td {
+            vertical-align: middle;
+        }
+        .badge-slot {
+            background: #43e97b;
+            color: #fff;
+            padding: 0.5em 1em;
+            border-radius: 20px;
+            font-weight: 500;
+            margin: 0.25rem 0.5rem 0 0;
+            display: inline-block;
+        }
+        .badge-slot.none {
+            background: #ccc;
+            color: #444;
+        }
+        .status-badge {
+            border-radius: 12px;
+            padding: 0.4em 1em;
+            font-size: 0.95em;
+            font-weight: 600;
+            display: inline-block;
+            color: #fff;
+        }
+        .status-confirmed { background: #43e97b; }
+        .status-pending { background: #ffc107; color: #333 !important; }
+        .status-cancelled { background: #e74c3c; }
+        .status-completed { background: #3498db; }
+        @media (max-width: 600px) {
+            .table-responsive {
+                font-size: 0.95em;
+            }
+            h2 {
+                font-size: 1.3em;
+            }
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-gradient">
+    <div class="container-fluid">
+        <a class="navbar-brand text-white" href="/receptionist/dashboard">Receptionist Dashboard</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link text-white" href="/receptionist/doctors">Doctors</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="/receptionist/appointments">Appointments</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="/logout">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container mt-4">
+    <h2 class="mb-4">Doctor Schedule</h2>
+    <div class="card">
+        <div class="card-body">
+            <h4 th:text="${doctor.name}" class="mb-3"></h4>
+            <form method="get" th:action="@{'/receptionist/doctors/' + ${doctor.id} + '/schedule'}" class="mb-4 d-flex align-items-center">
+                <label class="me-2 fw-semibold">Select Date:</label>
+                <input type="date" id="date" name="date" th:value="${selectedDate}" onchange="this.form.submit()" class="form-control w-auto">
+            </form>
+
+            <h5>Available Slots</h5>
+            <div class="mb-3">
+                <span th:each="slot : ${availableSlots}" th:text="${#temporals.format(slot, 'HH:mm')}" class="badge-slot"></span>
+                <span th:if="${#lists.isEmpty(availableSlots)}" class="badge-slot none">No available slots</span>
+            </div>
+
+            <h5 class="mt-4 mb-2">Appointments</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped mt-3">
+                    <thead class="table-success">
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Patient</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="appointment : ${appointments}" th:if="${appointment.appointmentDateTime.toLocalDate().equals(selectedDate)}">
+                            <td th:text="${#temporals.format(appointment.appointmentDateTime, 'yyyy-MM-dd')}"></td>
+                            <td th:text="${#temporals.format(appointment.appointmentDateTime, 'HH:mm')}"></td>
+                            <td th:text="${appointment.patient.name}"></td>
+                            <td>
+                                <span th:switch="${appointment.status}">
+                                    <span th:case="'CONFIRMED'" class="status-badge status-confirmed">CONFIRMED</span>
+                                    <span th:case="'PENDING'" class="status-badge status-pending">PENDING</span>
+                                    <span th:case="'CANCELLED'" class="status-badge status-cancelled">CANCELLED</span>
+                                    <span th:case="'COMPLETED'" class="status-badge status-completed">COMPLETED</span>
+                                    <span th:case="*" class="status-badge">[[${appointment.status}]]</span>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(appointments)}">
+                            <td colspan="4" class="text-center text-muted">No appointments found</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <a th:href="@{'/receptionist/doctors'}" class="btn btn-secondary btn-rounded mt-3">Back to Doctors</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

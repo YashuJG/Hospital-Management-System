@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Bill - Hospital Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">Hospital Management System</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/bills">Bills</a>
+                <a class="nav-link" href="/dashboard">Dashboard</a>
+                <form th:action='@{/logout}' method='post' style='display:inline;'>
+                    <button type='submit' class='nav-link btn btn-link'>Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h3><i class="fas fa-file-invoice-dollar"></i> Bill Details</h3>
+                            <div>
+                                <!-- Show Edit button only for ADMIN and RECEPTIONIST roles -->
+                                <a th:if="${#authorization.expression('hasRole(''ADMIN'') or hasRole(''RECEPTIONIST'')')}" 
+                                   th:href="@{/bills/{id}/edit(id=${bill.id})}" class="btn btn-warning">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                
+                                <!-- Show Payment button only if bill is not paid and user is patient -->
+                                <a th:if="${#authorization.expression('hasRole(''PATIENT'')') and bill.paymentStatus.name() != 'PAID'}" 
+                                   th:href="@{/bills/{id}/payment(id=${bill.id})}" class="btn btn-success">
+                                    <i class="fas fa-credit-card"></i> Payment
+                                </a>
+                                
+                                <!-- Show Confirm/Reject buttons only for ADMIN and RECEPTIONIST roles when payment is pending confirmation -->
+                                <div th:if="${#authorization.expression('hasRole(''ADMIN'') or hasRole(''RECEPTIONIST'')') and bill.paymentStatus.name() == 'PENDING_WAITING_FOR_CONFIRMATION'}" 
+                                     class="d-inline-block">
+                                    <!-- Debug info -->
+                                    <small class="text-muted d-block mb-2">
+                                        Role Check: <span th:text="${#authorization.expression('hasRole(''ADMIN'') or hasRole(''RECEPTIONIST'')')}"></span> | 
+                                        Status: <span th:text="${bill.paymentStatus.name()}"></span> | 
+                                        Status Check: <span th:text="${bill.paymentStatus.name() == 'PENDING_WAITING_FOR_CONFIRMATION'}"></span>
+                                    </small>
+                                    <form th:action="@{/bills/{id}/confirm-payment(id=${bill.id})}" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-success me-2">
+                                            <i class="fas fa-check"></i> Confirm Payment
+                                        </button>
+                                    </form>
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectPaymentModal">
+                                        <i class="fas fa-times"></i> Reject Payment
+                                    </button>
+                                </div>
+                                
+                                <a th:href="@{/bills/{id}/print(id=${bill.id})}" class="btn btn-secondary">
+                                    <i class="fas fa-print"></i> Print
+                                </a>
+                                <!-- Show different back button based on user role -->
+                                <a th:if="${#authorization.expression('hasRole(''PATIENT'')')}" 
+                                   href="/patient/dashboard" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left"></i> Back
+                                </a>
+                                <a th:unless="${#authorization.expression('hasRole(''PATIENT'')')}" 
+                                   href="/bills" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left"></i> Back
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Patient Information</h5>
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <td><strong>Name:</strong></td>
+                                        <td th:text="${bill.patient.name}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Email:</strong></td>
+                                        <td th:text="${bill.patient.email}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Phone:</strong></td>
+                                        <td th:text="${bill.patient.phone}"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Bill Information</h5>
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <td><strong>Bill Number:</strong></td>
+                                        <td th:text="${bill.billNumber}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Bill Date:</strong></td>
+                                        <td th:text="${#temporals.format(bill.billDate, 'dd/MM/yyyy HH:mm')}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Due Date:</strong></td>
+                                        <td th:text="${bill.dueDate != null ? #temporals.format(bill.dueDate, 'dd/MM/yyyy') : 'Not set'}"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5>Charges Breakdown</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>Consultation Fee:</strong></td>
+                                                <td class="text-end" th:text="${'₹' + bill.consultationFee}"></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Medication Cost:</strong></td>
+                                                <td class="text-end" th:text="${'₹' + bill.medicationCost}"></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Lab Test Cost:</strong></td>
+                                                <td class="text-end" th:text="${'₹' + bill.labTestCost}"></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Room Charges:</strong></td>
+                                                <td class="text-end" th:text="${'₹' + bill.roomCharges}"></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Procedure Cost:</strong></td>
+                                                <td class="text-end" th:text="${'₹' + bill.procedureCost}"></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Other Charges:</strong></td>
+                                                <td class="text-end" th:text="${'₹' + bill.otherCharges}"></td>
+                                            </tr>
+                                            <tr class="table-light">
+                                                <td><strong>Subtotal:</strong></td>
+                                                <td class="text-end" th:text="${'₹' + (bill.consultationFee.add(bill.medicationCost).add(bill.labTestCost).add(bill.roomCharges).add(bill.procedureCost).add(bill.otherCharges))}"></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Discount:</strong></td>
+                                                <td class="text-end text-danger" th:text="${'-₹' + bill.discountAmount}"></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Tax:</strong></td>
+                                                <td class="text-end" th:text="${'₹' + bill.taxAmount}"></td>
+                                            </tr>
+                                            <tr class="table-primary">
+                                                <td><strong>Total Amount:</strong></td>
+                                                <td class="text-end"><strong th:text="${'₹' + bill.totalAmount}"></strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Paid Amount:</strong></td>
+                                                <td class="text-end text-success" th:text="${'₹' + bill.paidAmount}"></td>
+                                            </tr>
+                                            <tr class="table-warning">
+                                                <td><strong>Balance Amount:</strong></td>
+                                                <td class="text-end"><strong th:text="${'₹' + bill.balanceAmount}"></strong></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Payment Status</h5>
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <td><strong>Status:</strong></td>
+                                        <td>
+                                            <span th:class="${bill.paymentStatus == 'PAID' ? 'badge bg-success' : 
+                                                           bill.paymentStatus == 'PENDING' ? 'badge bg-warning' : 
+                                                           bill.paymentStatus == 'PENDING_WAITING_FOR_CONFIRMATION' ? 'badge bg-info' : 
+                                                           bill.paymentStatus == 'PARTIAL' ? 'badge bg-primary' : 
+                                                           'badge bg-danger'}" 
+                                                  th:text="${bill.paymentStatus == 'PENDING_WAITING_FOR_CONFIRMATION' ? 'PENDING CONFIRMATION' : bill.paymentStatus}"></span>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${bill.paymentMethod != null}">
+                                        <td><strong>Payment Method:</strong></td>
+                                        <td th:text="${bill.paymentMethod}"></td>
+                                    </tr>
+                                    <tr th:if="${bill.paymentDate != null}">
+                                        <td><strong>Payment Date:</strong></td>
+                                        <td th:text="${#temporals.format(bill.paymentDate, 'dd/MM/yyyy HH:mm')}"></td>
+                                    </tr>
+                                    <tr th:if="${bill.transactionId != null}">
+                                        <td><strong>Transaction ID:</strong></td>
+                                        <td th:text="${bill.transactionId}"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Additional Information</h5>
+                                <div class="mb-3">
+                                    <strong>Notes:</strong>
+                                    <p th:text="${bill.notes != null ? bill.notes : 'No notes available'}"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <small class="text-muted">
+                                    <strong>Created:</strong> <span th:text="${#temporals.format(bill.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+                                    <span th:if="${bill.updatedAt != null}">
+                                        | <strong>Last Updated:</strong> <span th:text="${#temporals.format(bill.updatedAt, 'dd/MM/yyyy HH:mm')}"></span>
+                                    </span>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reject Payment Modal -->
+    <div class="modal fade" id="rejectPaymentModal" tabindex="-1" aria-labelledby="rejectPaymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rejectPaymentModalLabel">Reject Payment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form th:action="@{/bills/{id}/reject-payment(id=${bill.id})}" method="post">
+                    <div class="modal-body">
+                        <p>Are you sure you want to reject this payment?</p>
+                        <div class="mb-3">
+                            <label for="rejectionReason" class="form-label">Reason for Rejection (Optional):</label>
+                            <textarea class="form-control" id="rejectionReason" name="reason" rows="3" 
+                                      placeholder="Please provide a reason for rejecting this payment..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Reject Payment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 
