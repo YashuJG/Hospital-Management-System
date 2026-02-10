@@ -53,7 +53,7 @@ A comprehensive web-based Hospital Management System built with Java Spring Boot
 - `src/main/resources/static/` - Static assets (CSS, JS, images)
 
 ## 📧 Contact
-For any queries or support, please contact: uwmabtw@gmail.com
+For any queries or support, please contact: yasaswinisrit@gmail.com
 
 ---
 
